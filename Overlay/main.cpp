@@ -3,7 +3,7 @@
 
 int main(int argc, char * argv[])
 {
-	OverlayInjector overlayInjector("Etharnion.exe");
+	OverlayInjector overlayInjector("witcher.exe");
 	overlayInjector.run();
 	std::cin.get();
 	return 0;

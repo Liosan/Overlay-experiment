@@ -49,10 +49,9 @@ HANDLE ProcessHook::scanForProcess()
 	{
 		do
 		{
-			std::cerr << "Process " << std::string(entry.szExeFile) << "\n";
 			if (std::string(entry.szExeFile) == this->processName)
 			{  
-				std::cerr << "Process found!\n";
+				std::cerr << "Process " << std::string(entry.szExeFile) << " found!\n";
 				this->hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, entry.th32ProcessID);
 			}
 		}

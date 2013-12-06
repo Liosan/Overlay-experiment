@@ -1,4 +1,11 @@
 *.exe
+
 *.ilk
+
 *.pdb
+
 *.dll
+/Debug
+/Overlay/Debug
+/OverlayDLL/Debug
+**/*.tlog
