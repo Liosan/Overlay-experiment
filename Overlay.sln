@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OVerlay", "Overlay\OVerlay.vcxproj", "{7D332625-C0BE-4E18-84FE-BF966EBC4146}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OverlayDLL", "OverlayDLL\OverlayDLL.vcxproj", "{C749985C-3598-42A4-9C7C-C599D3BE6616}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7D332625-C0BE-4E18-84FE-BF966EBC4146}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7D332625-C0BE-4E18-84FE-BF966EBC4146}.Debug|Win32.Build.0 = Debug|Win32
+		{7D332625-C0BE-4E18-84FE-BF966EBC4146}.Release|Win32.ActiveCfg = Release|Win32
+		{7D332625-C0BE-4E18-84FE-BF966EBC4146}.Release|Win32.Build.0 = Release|Win32
+		{C749985C-3598-42A4-9C7C-C599D3BE6616}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C749985C-3598-42A4-9C7C-C599D3BE6616}.Debug|Win32.Build.0 = Debug|Win32
+		{C749985C-3598-42A4-9C7C-C599D3BE6616}.Release|Win32.ActiveCfg = Release|Win32
+		{C749985C-3598-42A4-9C7C-C599D3BE6616}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
