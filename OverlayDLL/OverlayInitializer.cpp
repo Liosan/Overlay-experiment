@@ -1,35 +1,39 @@
 #include "OverlayInitializer.h"
+#include "OverlayData.h"
+#include "KeyboardHandler.h"
 
 #include <tlhelp32.h>
 #include <sstream>
-#include <vector>
 #include <set>
 
-void OverlayInitializer::execute() 
+void OverlayInitializer::execute(OverlayData & overlayData) 
 {
-	HWND const wnd = this->findWindow();
-	this->overrideWindowProc(wnd);
+	overlayData.wnd = this->findWindow();
+	this->overrideWindowProc(overlayData);
 }
 
-// TODO cleanup
-static WNDPROC originalWndProc;
-
-// TODO cleanup - move to separate class
-LRESULT CALLBACK CustomWindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
+std::vector<DWORD> OverlayInitializer::findThreads() const
 {
-	switch (msg)
-	{
-	case WM_KEYDOWN:
-	case WM_KEYUP:
-		MessageBox(NULL,"Talk talk from CustomWindowProc", "Foo", MB_OK);
-		return DefWindowProc (wnd, msg, wparam, lparam);
-	default:
-		return CallWindowProc(originalWndProc, wnd, msg, wparam, lparam);
+	// enumerate threads of current process
+	DWORD const ownerPID = GetCurrentProcessId();
+	HANDLE const threadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0); 
+	THREADENTRY32 te32;  
+	te32.dwSize = sizeof(THREADENTRY32); 
+	Thread32First(threadSnap, &te32);
+	std::vector<DWORD> threadIds;
+	do 
+	{ 
+		if(te32.th32OwnerProcessID == ownerPID)
+		{
+			threadIds.push_back(te32.th32ThreadID);
+		}
 	}
+	while(Thread32Next(threadSnap, &te32));
+	CloseHandle(threadSnap);
+	return threadIds;
 }
 
-// TODO cleanup
-BOOL CALLBACK EnumThreadWndProc(HWND wnd, LPARAM lParam)
+BOOL CALLBACK OverlayInitializer::EnumThreadWndProc(HWND wnd, LPARAM lParam)
 {
 	std::set<HWND> * windows = reinterpret_cast<std::set<HWND> *>(lParam);
 	if (wnd != NULL)
@@ -41,26 +45,12 @@ BOOL CALLBACK EnumThreadWndProc(HWND wnd, LPARAM lParam)
 			windows->insert(wnd);
 		}
 	}
-	return TRUE;
+	return TRUE; // continue enumerating
 }
 
 HWND OverlayInitializer::findWindow() const
 {
-	// enumerate threads of current process
-	DWORD ownerPID = GetCurrentProcessId();
-	HANDLE threadSnap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0); 
-	THREADENTRY32 te32;  
-	te32.dwSize = sizeof(THREADENTRY32); 
-	Thread32First(threadSnap, &te32);
-	std::vector<DWORD> threadIds;
-	do 
-	{ 
-		if(te32.th32OwnerProcessID == ownerPID)
-		{
-			threadIds.push_back(te32.th32ThreadID);
-		}
-	} while(Thread32Next(threadSnap, &te32));
-	CloseHandle(threadSnap);
+	std::vector<DWORD> threadIds = this->findThreads();
 
 	// search for windows owned by our threads, matching WindowTitle
 	std::set<HWND> windows;
@@ -72,14 +62,16 @@ HWND OverlayInitializer::findWindow() const
 	return *windows.begin();
 }
 
-void OverlayInitializer::overrideWindowProc(HWND const wnd) const
-{
-	originalWndProc = reinterpret_cast<WNDPROC>(GetWindowLong(wnd, GWL_WNDPROC));
-	LONG result = SetWindowLong(wnd, GWL_WNDPROC, reinterpret_cast<LONG>(CustomWindowProc));
+void OverlayInitializer::overrideWindowProc(OverlayData & overlayData) const
+{	
+	WNDPROC const originalWndProc = reinterpret_cast<WNDPROC>(GetWindowLong(overlayData.wnd, GWL_WNDPROC));
+	overlayData.keyboardHandler = new KeyboardHandler(originalWndProc);
+	LONG const result = SetWindowLong(overlayData.wnd, GWL_WNDPROC, reinterpret_cast<LONG>(KeyboardHandler::customWindowProcForwarder));
+
 	if (result == 0)
 	{
 		std::ostringstream oss;
-		oss << "Result: " << result << ", err: " << GetLastError() << "; wnd=" << GetActiveWindow();
+		oss << "Result: " << result << ", err: " << GetLastError() << "; wnd=" << overlayData.wnd;
 		MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
 	}
 }

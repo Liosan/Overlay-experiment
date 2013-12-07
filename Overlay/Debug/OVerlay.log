@@ -1,10 +1,15 @@
-﻿Build started 13-12-06 21:47:23.
+﻿Build started 13-12-07 10:52:58.
      1>Project "E:\Documents\C++ Projects\Overlay\OVerlay\Overlay\OVerlay.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\OVerlay.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt OverlayInjector.cpp ProcessHook.cpp main.cpp
+         OverlayInjector.cpp
+         Generating Code...
+         Compiling...
          main.cpp
+         ProcessHook.cpp
+         Generating Code...
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
@@ -25,4 +30,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:06.73
+Time Elapsed 00:00:06.67

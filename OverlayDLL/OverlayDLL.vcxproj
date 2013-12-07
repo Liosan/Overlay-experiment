@@ -72,6 +72,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="KeyboardHandler.h" />
+    <ClInclude Include="OverlayData.h" />
     <ClInclude Include="OverlayInitializer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +85,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="KeyboardHandler.cpp" />
     <ClCompile Include="OverlayInitializer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,9 @@
 #include <windows.h>
 #include <stdio.h>
 #include "OverlayInitializer.h"
+#include "OverlayData.h"
+
+OverlayData * processOverlayData;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved)
 {
@@ -8,8 +11,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved)
 	{
 	case DLL_PROCESS_ATTACH:
 	{
+		processOverlayData = new OverlayData();
 		OverlayInitializer * initializer = new OverlayInitializer();
-		initializer->execute();
+		initializer->execute(*processOverlayData);
 		delete initializer;
 		break;
 	}

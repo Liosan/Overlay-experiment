@@ -4,6 +4,7 @@
 #include <string>
 #include <Windows.h>
 
+// TODO rename ProcessHandle ?
 class ProcessHook 
 {
 public:
