@@ -5,16 +5,20 @@
 #include <vector>
 
 class KeyboardHandler;
+class Renderer;
 
 struct OverlayData
 {
 public:
 	HWND wnd;
+	std::vector<DWORD> threadIds;
 
 	KeyboardHandler * keyboardHandler;
-	std::vector<DWORD> threadIds;
+	Renderer * renderer;
 };
 
+// global pointer
+// TODO wrap as static variable for OverlayData?
 extern OverlayData * processOverlayData;
 
 #endif

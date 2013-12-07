@@ -72,21 +72,19 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="disasm-lib\cpu.h" />
-    <ClInclude Include="disasm-lib\disasm.h" />
-    <ClInclude Include="disasm-lib\disasm_x86.h" />
-    <ClInclude Include="disasm-lib\disasm_x86_tables.h" />
-    <ClInclude Include="disasm-lib\misc.h" />
+    <ClInclude Include="detours\detours.h" />
+    <ClInclude Include="detours\detver.h" />
     <ClInclude Include="KeyboardHandler.h" />
-    <ClInclude Include="mhook-lib\mhook.h" />
     <ClInclude Include="OverlayData.h" />
     <ClInclude Include="OverlayInitializer.h" />
+    <ClInclude Include="Renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="disasm-lib\cpu.c" />
-    <ClCompile Include="disasm-lib\disasm.c" />
-    <ClCompile Include="disasm-lib\disasm_x86.c" />
-    <ClCompile Include="disasm-lib\misc.c" />
+    <ClCompile Include="detours\creatwth.cpp" />
+    <ClCompile Include="detours\detours.cpp" />
+    <ClCompile Include="detours\disasm.cpp" />
+    <ClCompile Include="detours\image.cpp" />
+    <ClCompile Include="detours\modules.cpp" />
     <ClCompile Include="dllmain.cpp">
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsManaged>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -96,8 +94,8 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="KeyboardHandler.cpp" />
-    <ClCompile Include="mhook-lib\mhook.cpp" />
     <ClCompile Include="OverlayInitializer.cpp" />
+    <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -32,7 +32,17 @@ private:
 	 */
 	static BOOL CALLBACK EnumThreadWndProc(HWND wnd, LPARAM lParam);
 
+	/**
+	 * Creates KeyboardHandler.
+	 * Changes the used window proc so that all messages pass through KeyboardHandler.
+	 */
 	void overrideWindowProc(OverlayData & overlayData) const;
+
+	/**
+	 * Creates Renderer.
+	 * Hooks DirectX methods so that the Renderer can be used.
+	 */
+	void hookRendering(OverlayData & overlayData) const;
 };
 
 #endif

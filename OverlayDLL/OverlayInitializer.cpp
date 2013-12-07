@@ -1,16 +1,19 @@
 #include "OverlayInitializer.h"
 #include "OverlayData.h"
 #include "KeyboardHandler.h"
+#include "Renderer.h"
 
 #include <tlhelp32.h>
 #include <sstream>
 #include <set>
+#include "detours\detours.h"
 
 void OverlayInitializer::execute(OverlayData & overlayData) 
 {	
 	overlayData.threadIds = this->findThreads();
 	overlayData.wnd = this->findWindow(overlayData);
 	this->overrideWindowProc(overlayData);
+	this->hookRendering(overlayData);
 }
 
 std::vector<DWORD> OverlayInitializer::findThreads() const
@@ -73,4 +76,64 @@ void OverlayInitializer::overrideWindowProc(OverlayData & overlayData) const
 		oss << "Result: " << result << ", err: " << GetLastError() << "; wnd=" << overlayData.wnd;
 		MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
 	}
+}
+
+// TODO integrate, comment
+DWORD * FindVTable(OverlayData & overlayData)
+{
+	typedef IDirect3D9 * (WINAPI * DXCreate_t)(UINT);
+	DXCreate_t pCreate = (DXCreate_t)(GetProcAddress(GetModuleHandle("d3d9.dll"), "Direct3DCreate9"));
+    LPDIRECT3D9 directX = pCreate(D3D_SDK_VERSION);
+	
+	D3DPRESENT_PARAMETERS dxPresentParams;
+    ZeroMemory( &dxPresentParams, sizeof(dxPresentParams) );
+    dxPresentParams.Windowed = TRUE;
+    dxPresentParams.SwapEffect = D3DSWAPEFFECT_DISCARD;
+    dxPresentParams.BackBufferFormat = D3DFMT_UNKNOWN;
+	
+	LPDIRECT3DDEVICE9 directXDevice;
+    directX->CreateDevice(
+        D3DADAPTER_DEFAULT, 
+		D3DDEVTYPE_HAL, 
+        overlayData.wnd, 
+		D3DCREATE_HARDWARE_VERTEXPROCESSING, 
+        &dxPresentParams, 
+		&directXDevice
+	);
+
+	DWORD * vTablePtr = (DWORD*)*((DWORD*)directXDevice);
+	
+	std::ostringstream oss;
+	oss << "vTablePtr: " << vTablePtr << ", directXDevice: " << directXDevice;
+	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
+
+	directXDevice->Release();
+	directX->Release();
+
+	return vTablePtr;
+}
+
+void OverlayInitializer::hookRendering(OverlayData & overlayData) const
+{
+	DWORD * vtablePtr = FindVTable(overlayData);
+	
+	DX_Present_t const originalDXPresent = (DX_Present_t) vtablePtr[17];
+    // pReset = (DX_Reset_t) vtablePtr[16];
+	
+	std::ostringstream oss1;
+	oss1 << "hookRendering grabbed vtablePtr: " << vtablePtr << "; originalDXPresent: " << originalDXPresent;
+	MessageBox(NULL, oss1.str().c_str(), "Foo", MB_OK);
+
+	overlayData.renderer = new Renderer(originalDXPresent);
+
+	DetourTransactionBegin();
+	if(DetourAttach(&(PVOID&)originalDXPresent, Renderer::DXPresentForwarder) == ERROR_INVALID_HANDLE)
+	{
+		MessageBox(NULL, "Attach failed","Detours", MB_OK);
+	}
+	DetourTransactionCommit();
+	
+	std::ostringstream oss;
+	oss << "Result: " <<  ", err: " << GetLastError() << "; originalDXPresent=" << originalDXPresent;
+	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
 }
