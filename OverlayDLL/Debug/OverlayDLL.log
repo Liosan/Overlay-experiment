@@ -1,15 +1,14 @@
-﻿Build started 13-12-07 18:43:42.
+﻿Build started 13-12-07 23:14:01.
      1>Project "E:\Documents\C++ Projects\Overlay\OVerlay\OverlayDLL\OverlayDLL.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Touching "Debug\OverlayDLL.unsuccessfulbuild".
        ClCompile:
-         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D OVERLAYDLL_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt OverlayInitializer.cpp
-         OverlayInitializer.cpp
+         All outputs are up-to-date.
          All outputs are up-to-date.
        ManifestResourceCompile:
          All outputs are up-to-date.
        Link:
-         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Documents\C++ Projects\Overlay\OVerlay\Debug\OverlayDLL.dll" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\OverlayDLL.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\Documents\C++ Projects\Overlay\OVerlay\Debug\OverlayDLL.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Documents\C++ Projects\Overlay\OVerlay\Debug\OverlayDLL.lib" /MACHINE:X86 /DLL Debug\OverlayDLL.dll.embed.manifest.res
+         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"E:\Documents\C++ Projects\Overlay\OVerlay\Debug\OverlayDLL.dll" /INCREMENTAL /NOLOGO D3dx9.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\OverlayDLL.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"E:\Documents\C++ Projects\Overlay\OVerlay\Debug\OverlayDLL.pdb" /SUBSYSTEM:WINDOWS /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:\Documents\C++ Projects\Overlay\OVerlay\Debug\OverlayDLL.lib" /MACHINE:X86 /DLL Debug\OverlayDLL.dll.embed.manifest.res
          Debug\creatwth.obj
          Debug\detours.obj
          Debug\disasm.obj
@@ -32,4 +31,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:04.09
+Time Elapsed 00:00:00.48

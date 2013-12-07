@@ -102,7 +102,7 @@ DWORD * FindVTable(OverlayData & overlayData)
 	);
 
 	DWORD * vTablePtr = (DWORD*)*((DWORD*)directXDevice);
-	
+
 	std::ostringstream oss;
 	oss << "vTablePtr: " << vTablePtr << ", directXDevice: " << directXDevice;
 	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
@@ -117,23 +117,21 @@ void OverlayInitializer::hookRendering(OverlayData & overlayData) const
 {
 	DWORD * vtablePtr = FindVTable(overlayData);
 	
-	DX_Present_t const originalDXPresent = (DX_Present_t) vtablePtr[17];
-    // pReset = (DX_Reset_t) vtablePtr[16];
-	
-	std::ostringstream oss1;
-	oss1 << "hookRendering grabbed vtablePtr: " << vtablePtr << "; originalDXPresent: " << originalDXPresent;
-	MessageBox(NULL, oss1.str().c_str(), "Foo", MB_OK);
+	DX_EndScene_t const originalDXEndScene = (DX_EndScene_t) vtablePtr[42]; // offset in d3d9.h for 9.0c
+	overlayData.renderer = new Renderer(originalDXEndScene);
 
-	overlayData.renderer = new Renderer(originalDXPresent);
+	std::ostringstream oss;
+	oss << "originalDXEndScene: " << originalDXEndScene;
+	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
 
 	DetourTransactionBegin();
-	if(DetourAttach(&(PVOID&)originalDXPresent, Renderer::DXPresentForwarder) == ERROR_INVALID_HANDLE)
+	if(DetourAttach(&(PVOID&)originalDXEndScene, Renderer::DXEndSceneForwarder) == ERROR_INVALID_HANDLE)
 	{
-		MessageBox(NULL, "Attach failed","Detours", MB_OK);
+		MessageBox(NULL, "Attach of EndScene failed","Detours failure", MB_OK);
 	}
 	DetourTransactionCommit();
 	
-	std::ostringstream oss;
-	oss << "Result: " <<  ", err: " << GetLastError() << "; originalDXPresent=" << originalDXPresent;
-	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
+	std::ostringstream oss1;
+	oss1 << "Attach complete";
+	MessageBox(NULL, oss1.str().c_str(),"Foo", MB_OK);
 }

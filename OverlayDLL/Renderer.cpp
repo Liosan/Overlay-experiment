@@ -1,29 +1,56 @@
 #include "Renderer.h"
 #include "OverlayData.h"
+#include <sstream>
 
-Renderer::Renderer(DX_Present_t const originalDXPresent):
-	originalDXPresent(originalDXPresent)
+Renderer::Renderer(DX_EndScene_t const originalDXEndScene):
+	initialized(false),
+	font(NULL),
+	originalDXEndScene(originalDXEndScene)
 {
 }
 
-HRESULT WINAPI Renderer::DXPresentForwarder(
-	LPDIRECT3DDEVICE9 pDevice, 
-	const RECT *pSourceRect,
-	const RECT *pDestRect,
-	HWND hDestWindowOverride,
-	const RGNDATA *pDirtyRegion
-) {
-	MessageBox(NULL,"DXPresentForwarder", "Foo", MB_OK);
-	return processOverlayData->renderer->DXPresentCustom(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+HRESULT WINAPI Renderer::DXEndSceneForwarder(LPDIRECT3DDEVICE9 const pDevice)
+{
+	return processOverlayData->renderer->DXEndSceneCustom(pDevice);
 }
 
-HRESULT Renderer::DXPresentCustom(
-	LPDIRECT3DDEVICE9 pDevice, 
-	const RECT *pSourceRect,
-	const RECT *pDestRect,
-	HWND hDestWindowOverride,
-	const RGNDATA *pDirtyRegion
-) {
-	MessageBox(NULL,"DXPresentCustom", "Foo", MB_OK);
-	return this->originalDXPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+HRESULT Renderer::DXEndSceneCustom(LPDIRECT3DDEVICE9 const pDevice)
+{
+	//this->initialize(pDevice);
+	//this->drawOverlayHint(pDevice);
+	MessageBox(NULL, "DXEndSceneCustom","Foo", MB_OK);
+	return this->originalDXEndScene(pDevice);
+}
+
+void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
+{
+	if (!this->initialized)
+	{
+		D3DXCreateFont(
+			pDevice, 
+			16, 
+			0, 
+			FW_BOLD, 
+			0, 
+			FALSE, 
+			DEFAULT_CHARSET, 
+			OUT_DEFAULT_PRECIS, 
+			ANTIALIASED_QUALITY, 
+			DEFAULT_PITCH | FF_DONTCARE, 
+			"Arial",
+			&this->font 
+		);
+		this->initialized = true;
+	}
+}
+
+void Renderer::drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice)
+{
+	D3DCOLOR fontColor = D3DCOLOR_ARGB(255, 255, 255, 255);
+	RECT rct;
+	rct.left=20;
+	rct.right=1680;
+	rct.top=20;
+	rct.bottom=rct.top+200;
+	this->font->DrawTextA(NULL, "Hello world", -1, &rct, 0, fontColor);
 }

@@ -3,38 +3,27 @@
 
 #include <Windows.h>
 #include <d3d9.h>
+#include <d3dx9core.h>
 
-typedef HRESULT (WINAPI * DX_Present_t)(
-	LPDIRECT3DDEVICE9 pDevice, 
-	const RECT *pSourceRect,
-	const RECT *pDestRect,
-	HWND hDestWindowOverride,
-	const RGNDATA *pDirtyRegion
+typedef HRESULT (WINAPI * DX_EndScene_t)(
+	LPDIRECT3DDEVICE9 pDevice
 );
 
 class Renderer
 {
 public:
-	Renderer(DX_Present_t const originalDXPresent);
+	Renderer(DX_EndScene_t const originalDXEndScene);
 
-	static HRESULT WINAPI DXPresentForwarder(
-		LPDIRECT3DDEVICE9 pDevice, 
-		const RECT *pSourceRect,
-		const RECT *pDestRect,
-		HWND hDestWindowOverride,
-		const RGNDATA *pDirtyRegion
-	);
+	static HRESULT WINAPI DXEndSceneForwarder(LPDIRECT3DDEVICE9 pDevice);
+private:	
+	void initialize(LPDIRECT3DDEVICE9 const pDevice);
+	void drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice);
 
-	DX_Present_t const originalDXPresent;
-private:
-	HRESULT DXPresentCustom(
-		LPDIRECT3DDEVICE9 pDevice, 
-		const RECT *pSourceRect,
-		const RECT *pDestRect,
-		HWND hDestWindowOverride,
-		const RGNDATA *pDirtyRegion
-	);
+	HRESULT DXEndSceneCustom(LPDIRECT3DDEVICE9 pDevice);
 
+	bool initialized;
+	LPD3DXFONT font;
+	DX_EndScene_t const originalDXEndScene;
 };
 
 #endif
