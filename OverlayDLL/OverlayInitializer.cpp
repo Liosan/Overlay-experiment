@@ -7,8 +7,9 @@
 #include <set>
 
 void OverlayInitializer::execute(OverlayData & overlayData) 
-{
-	overlayData.wnd = this->findWindow();
+{	
+	overlayData.threadIds = this->findThreads();
+	overlayData.wnd = this->findWindow(overlayData);
 	this->overrideWindowProc(overlayData);
 }
 
@@ -48,13 +49,11 @@ BOOL CALLBACK OverlayInitializer::EnumThreadWndProc(HWND wnd, LPARAM lParam)
 	return TRUE; // continue enumerating
 }
 
-HWND OverlayInitializer::findWindow() const
+HWND OverlayInitializer::findWindow(OverlayData & overlayData) const
 {
-	std::vector<DWORD> threadIds = this->findThreads();
-
 	// search for windows owned by our threads, matching WindowTitle
 	std::set<HWND> windows;
-	for(std::vector<DWORD>::const_iterator it = threadIds.begin(); it != threadIds.end(); it++)
+	for(std::vector<DWORD>::const_iterator it = overlayData.threadIds.begin(); it != overlayData.threadIds.end(); it++)
 	{
 		EnumThreadWindows(*it, EnumThreadWndProc, reinterpret_cast<LPARAM>(&windows));
 	}
