@@ -15,6 +15,7 @@ public:
 	Renderer(DX_EndScene_t const originalDXEndScene);
 
 	static HRESULT WINAPI DXEndSceneForwarder(LPDIRECT3DDEVICE9 pDevice);
+	DX_EndScene_t const originalDXEndScene; // must be public so can be modified by Detours call
 private:	
 	void initialize(LPDIRECT3DDEVICE9 const pDevice);
 	void drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice);
@@ -23,7 +24,6 @@ private:
 
 	bool initialized;
 	LPD3DXFONT font;
-	DX_EndScene_t const originalDXEndScene;
 };
 
 #endif

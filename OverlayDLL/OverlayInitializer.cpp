@@ -4,7 +4,7 @@
 #include "Renderer.h"
 
 #include <tlhelp32.h>
-#include <sstream>
+#include <iostream>
 #include <set>
 #include "detours\detours.h"
 
@@ -72,14 +72,11 @@ void OverlayInitializer::overrideWindowProc(OverlayData & overlayData) const
 
 	if (result == 0)
 	{
-		std::ostringstream oss;
-		oss << "Result: " << result << ", err: " << GetLastError() << "; wnd=" << overlayData.wnd;
-		MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
+		std::cerr << "overrideWindowProc result: " << result << ", err: " << GetLastError() << "; wnd=" << overlayData.wnd << "\n";
 	}
 }
 
-// TODO integrate, comment
-DWORD * FindVTable(OverlayData & overlayData)
+UINT_PTR * OverlayInitializer::findD3dDeviceVTable(OverlayData & overlayData) const
 {
 	typedef IDirect3D9 * (WINAPI * DXCreate_t)(UINT);
 	DXCreate_t pCreate = (DXCreate_t)(GetProcAddress(GetModuleHandle("d3d9.dll"), "Direct3DCreate9"));
@@ -101,11 +98,9 @@ DWORD * FindVTable(OverlayData & overlayData)
 		&directXDevice
 	);
 
-	DWORD * vTablePtr = (DWORD*)*((DWORD*)directXDevice);
+	UINT_PTR * vTablePtr = (UINT_PTR *)(*((UINT_PTR *)directXDevice));
 
-	std::ostringstream oss;
-	oss << "vTablePtr: " << vTablePtr << ", directXDevice: " << directXDevice;
-	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
+	std::cerr << "vTablePtr: " << vTablePtr << ", directXDevice: " << directXDevice << "\n";
 
 	directXDevice->Release();
 	directX->Release();
@@ -115,23 +110,24 @@ DWORD * FindVTable(OverlayData & overlayData)
 
 void OverlayInitializer::hookRendering(OverlayData & overlayData) const
 {
-	DWORD * vtablePtr = FindVTable(overlayData);
-	
+	UINT_PTR * vtablePtr = this->findD3dDeviceVTable(overlayData);	
+
 	DX_EndScene_t const originalDXEndScene = (DX_EndScene_t) vtablePtr[42]; // offset in d3d9.h for 9.0c
 	overlayData.renderer = new Renderer(originalDXEndScene);
 
-	std::ostringstream oss;
-	oss << "originalDXEndScene: " << originalDXEndScene;
-	MessageBox(NULL, oss.str().c_str(),"Foo", MB_OK);
+	std::cerr << "originalDXEndScene: " << originalDXEndScene << "; Renderer::DXEndSceneForwarder: " << Renderer::DXEndSceneForwarder << "\n";
+
+	//DWORD prot;
+	//VirtualProtect(&vtablePtr[42], sizeof(DWORD), PAGE_READWRITE, &prot);
+	//*(PDWORD)&vtablePtr[42] = (DWORD)Renderer::DXEndSceneForwarder;
 
 	DetourTransactionBegin();
-	if(DetourAttach(&(PVOID&)originalDXEndScene, Renderer::DXEndSceneForwarder) == ERROR_INVALID_HANDLE)
+	DetourUpdateThread(GetCurrentThread());
+	if(DetourAttach(&(PVOID&)(overlayData.renderer->originalDXEndScene), Renderer::DXEndSceneForwarder) == ERROR_INVALID_HANDLE)
 	{
 		MessageBox(NULL, "Attach of EndScene failed","Detours failure", MB_OK);
 	}
 	DetourTransactionCommit();
 	
-	std::ostringstream oss1;
-	oss1 << "Attach complete";
-	MessageBox(NULL, oss1.str().c_str(),"Foo", MB_OK);
+	std::cerr << "Attach complete!\n";
 }

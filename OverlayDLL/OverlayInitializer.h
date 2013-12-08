@@ -39,6 +39,11 @@ private:
 	void overrideWindowProc(OverlayData & overlayData) const;
 
 	/**
+	 * Find adress of vtable for d3dDevice by creating a temporary object.
+	 */
+	UINT_PTR * OverlayInitializer::findD3dDeviceVTable(OverlayData & overlayData) const;
+
+	/**
 	 * Creates Renderer.
 	 * Hooks DirectX methods so that the Renderer can be used.
 	 */

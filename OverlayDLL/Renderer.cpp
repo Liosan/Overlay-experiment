@@ -1,6 +1,6 @@
 #include "Renderer.h"
 #include "OverlayData.h"
-#include <sstream>
+#include <iostream>
 
 Renderer::Renderer(DX_EndScene_t const originalDXEndScene):
 	initialized(false),
@@ -16,9 +16,13 @@ HRESULT WINAPI Renderer::DXEndSceneForwarder(LPDIRECT3DDEVICE9 const pDevice)
 
 HRESULT Renderer::DXEndSceneCustom(LPDIRECT3DDEVICE9 const pDevice)
 {
-	//this->initialize(pDevice);
-	//this->drawOverlayHint(pDevice);
-	MessageBox(NULL, "DXEndSceneCustom","Foo", MB_OK);
+	this->initialize(pDevice);
+	this->drawOverlayHint(pDevice);
+	static bool once = true;
+	if (once) { 
+		std::cerr << "DXEndSceneCustom; calling original: " << this->originalDXEndScene << "\n"; 
+		once = false; 
+	}
 	return this->originalDXEndScene(pDevice);
 }
 
@@ -46,11 +50,15 @@ void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
 
 void Renderer::drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice)
 {
-	D3DCOLOR fontColor = D3DCOLOR_ARGB(255, 255, 255, 255);
 	RECT rct;
-	rct.left=20;
-	rct.right=1680;
-	rct.top=20;
-	rct.bottom=rct.top+200;
-	this->font->DrawTextA(NULL, "Hello world", -1, &rct, 0, fontColor);
+	rct.left = 20;
+	rct.right = 1680;
+	rct.top = 20;
+	rct.bottom = 220;
+	int result = this->font->DrawTextA(NULL, "Hello world", -1, &rct, DT_NOCLIP, 0xFFFFFFF);
+	static bool once = true;
+	if (once) { 
+		std::cerr << "drawOverlayHint complete: " << result << "\n"; 
+		once = false; 
+	}
 }
