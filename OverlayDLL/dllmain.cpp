@@ -6,6 +6,7 @@
 #include "OverlayInitializer.h"
 #include "OverlayData.h"
 #include "Renderer.h"
+#include "KeyboardHandler.h"
 
 // allocate console to ease debugging
 void createConsole()
@@ -46,6 +47,9 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved)
 	case DLL_PROCESS_DETACH:
 		OverlayData::getSingleton()->renderer->terminate();
 		FreeConsole();
+		delete OverlayData::getSingleton()->renderer;
+		delete OverlayData::getSingleton()->keyboardHandler;
+		delete OverlayData::getSingleton();
 		break;
 	}
 	return TRUE;

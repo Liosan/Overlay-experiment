@@ -9,7 +9,9 @@ class Renderer;
 
 /**
  * Stores the state of the overlay, as well as the pointers to it's components.
- * Initialized by OverlayInitializer.
+ * Initialized by OverlayInitializer, destroyed upon DLL_DETACH in dllmain.
+ * These responsibilities are intentionaly taken out of OverlayData constructor/destructor
+ * since it seemed more appropriate for an object bundling a few pointers together to be externally managed.
  */
 struct OverlayData
 {

@@ -1,13 +1,15 @@
-﻿Build started 13-12-08 21:52:56.
+﻿Build started 13-12-08 22:00:35.
      1>Project "E:\Documents\C++ Projects\Overlay\OVerlay\OverlayDLL\OverlayDLL.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\OverlayDLL.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D OVERLAYDLL_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt OverlayInitializer.cpp Renderer.cpp
-         OverlayInitializer.cpp
+         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D OVERLAYDLL_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt KeyboardHandler.cpp OverlayData.cpp OverlayInitializer.cpp Renderer.cpp
+         KeyboardHandler.cpp
          Generating Code...
          Compiling...
          Renderer.cpp
+         OverlayInitializer.cpp
+         OverlayData.cpp
          Generating Code...
          g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D OVERLAYDLL_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt dllmain.cpp
          dllmain.cpp
@@ -38,4 +40,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.50
+Time Elapsed 00:00:04.76
