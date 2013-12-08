@@ -45,6 +45,9 @@
     <ClCompile Include="detours\disasm.cpp">
       <Filter>detours</Filter>
     </ClCompile>
+    <ClCompile Include="OverlayData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OverlayInitializer.h">

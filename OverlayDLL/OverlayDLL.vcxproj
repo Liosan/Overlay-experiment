@@ -97,6 +97,7 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="KeyboardHandler.cpp" />
+    <ClCompile Include="OverlayData.cpp" />
     <ClCompile Include="OverlayInitializer.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>

@@ -9,7 +9,7 @@ KeyboardHandler::KeyboardHandler(WNDPROC const originalWndProc):
 	
 LRESULT CALLBACK KeyboardHandler::customWindowProcForwarder(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	return processOverlayData->keyboardHandler->customWindowProc(wnd, msg, wParam, lParam);
+	return OverlayData::getSingleton()->keyboardHandler->customWindowProc(wnd, msg, wParam, lParam);
 }
 
 LRESULT KeyboardHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -19,7 +19,7 @@ LRESULT KeyboardHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPA
 	case WM_KEYUP:
 		if ((wParam == VK_SPACE) && (GetKeyState(VK_CONTROL) != 0))
 		{
-			processOverlayData->overlayEnabled = !processOverlayData->overlayEnabled;
+			OverlayData::getSingleton()->overlayEnabled = !OverlayData::getSingleton()->overlayEnabled;
 		}
 		break;
 	}

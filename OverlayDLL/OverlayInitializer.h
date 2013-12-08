@@ -25,7 +25,7 @@ private:
 	/**
 	 * Returns first found window owned by any thread in the current process, with matching WindowTitle.
 	 */
-	HWND findWindow(OverlayData & overlayData) const;
+	HWND findWindow(OverlayData & overlayData, std::vector<DWORD> const & threadIds) const;
 	/**
 	 * EnumThreadWindows callback, used by findWindow.
 	 * Expects lParam to be a pointer to be a pointer to std::set<HWND> where the interesting windows are placed.

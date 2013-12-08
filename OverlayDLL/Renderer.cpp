@@ -17,7 +17,7 @@ void Renderer::terminate()
 
 HRESULT WINAPI Renderer::DXEndSceneForwarder(LPDIRECT3DDEVICE9 const pDevice)
 {
-	return processOverlayData->renderer->DXEndSceneCustom(pDevice);
+	return OverlayData::getSingleton()->renderer->DXEndSceneCustom(pDevice);
 }
 
 HRESULT Renderer::DXEndSceneCustom(LPDIRECT3DDEVICE9 const pDevice)
@@ -27,7 +27,7 @@ HRESULT Renderer::DXEndSceneCustom(LPDIRECT3DDEVICE9 const pDevice)
 	{
 		this->initialize(pDevice);
 
-		if (processOverlayData->overlayEnabled)
+		if (OverlayData::getSingleton()->overlayEnabled)
 		{
 			this->drawFullOverlay(pDevice);
 		}
@@ -68,7 +68,7 @@ void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
 
 		// read window size		
 		RECT windowRect;
-		GetWindowRect(processOverlayData->wnd, &windowRect);		
+		GetWindowRect(OverlayData::getSingleton()->wnd, &windowRect);		
 		this->windowWidth = windowRect.right - windowRect.left;
 		this->windowHeight = windowRect.bottom - windowRect.top;
 

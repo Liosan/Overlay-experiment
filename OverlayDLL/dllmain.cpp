@@ -7,8 +7,6 @@
 #include "OverlayData.h"
 #include "Renderer.h"
 
-OverlayData * processOverlayData;
-
 // allocate console to ease debugging
 void createConsole()
 {
@@ -29,9 +27,9 @@ void createConsole()
 DWORD WINAPI initializationThread(LPVOID)
 {	
 	createConsole();
-	processOverlayData = new OverlayData();
+	OverlayData::allocateSingleton();
 	OverlayInitializer * initializer = new OverlayInitializer();
-	initializer->execute(*processOverlayData);
+	initializer->execute(*OverlayData::getSingleton());
 	delete initializer;
 	return 0;
 }
@@ -46,12 +44,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved)
 		break;
 	}
 	case DLL_PROCESS_DETACH:
-		processOverlayData->renderer->terminate();
+		OverlayData::getSingleton()->renderer->terminate();
 		FreeConsole();
-		break;
-	case DLL_THREAD_ATTACH:
-		break;
-	case DLL_THREAD_DETACH:
 		break;
 	}
 	return TRUE;

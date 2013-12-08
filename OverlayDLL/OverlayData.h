@@ -7,20 +7,25 @@
 class KeyboardHandler;
 class Renderer;
 
+/**
+ * Stores the state of the overlay, as well as the pointers to it's components.
+ * Initialized by OverlayInitializer.
+ */
 struct OverlayData
 {
 public:
 	HWND wnd;
-	std::vector<DWORD> threadIds;
-
 	bool overlayEnabled;
 
 	KeyboardHandler * keyboardHandler;
 	Renderer * renderer;
+
+	static OverlayData * getSingleton();
+	static void allocateSingleton();
+private:
+	// seems like the most convenient way to store crucial data since we are in an injected DLL.
+	static OverlayData * singleton;
 };
 
-// global pointer
-// TODO wrap as static variable for OverlayData?
-extern OverlayData * processOverlayData;
 
 #endif
