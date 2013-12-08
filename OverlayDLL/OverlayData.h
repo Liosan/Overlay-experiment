@@ -13,6 +13,8 @@ public:
 	HWND wnd;
 	std::vector<DWORD> threadIds;
 
+	bool overlayEnabled;
+
 	KeyboardHandler * keyboardHandler;
 	Renderer * renderer;
 };

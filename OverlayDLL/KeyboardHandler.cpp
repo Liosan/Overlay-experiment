@@ -19,7 +19,7 @@ LRESULT KeyboardHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPA
 	case WM_KEYUP:
 		if ((wParam == VK_SPACE) && (GetKeyState(VK_CONTROL) != 0))
 		{
-			MessageBox(NULL,"Ctrl-space detected", "Foo", MB_OK);
+			processOverlayData->overlayEnabled = !processOverlayData->overlayEnabled;
 		}
 		break;
 	}

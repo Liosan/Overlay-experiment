@@ -10,6 +10,7 @@
 
 void OverlayInitializer::execute(OverlayData & overlayData) 
 {	
+	overlayData.overlayEnabled = false;
 	overlayData.threadIds = this->findThreads();
 	overlayData.wnd = this->findWindow(overlayData);
 	this->overrideWindowProc(overlayData);
