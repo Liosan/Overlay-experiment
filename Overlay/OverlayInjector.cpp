@@ -2,23 +2,24 @@
 #include <iostream>
 
 OverlayInjector::OverlayInjector(std::string const & processName):
-	processHook(processName)
+	processFinder(processName)
 {
 }
 
 void OverlayInjector::run()
 {
-	if (this->processHook.isRunning()) 
+	if (this->processFinder.isRunning()) 
 	{
-		std::cerr << "Process running\n";
+		std::cerr << "Process " << this->processFinder.getProcessName() << " running\n";
 		this->injectDll();
-	} else {
-		std::cerr << "Process not running\n";
+	} 
+	else 
+	{
+		std::cerr << "Process " << this->processFinder.getProcessName() << " not running\n";
 	}
 }
 
-// TODO integrate
-std::string exePath() 
+std::string OverlayInjector::executablePath() const
 {
     char buffer[MAX_PATH];
     GetModuleFileName(NULL, buffer, MAX_PATH);
@@ -26,10 +27,10 @@ std::string exePath()
     return std::string(buffer).substr(0, pos);
 }
 
-void OverlayInjector::injectDll() 	
+void OverlayInjector::injectDll() 
 {
-	HANDLE const process = this->processHook.getHandle();
-	std::string const pathToDll = exePath() + "\\OverlayDLL.dll";
+	HANDLE const process = this->processFinder.getHandle();
+	std::string const pathToDll = executablePath() + "\\OverlayDLL.dll";
 	
 	DWORD dwAttrib = GetFileAttributes(pathToDll.c_str());
 	if (dwAttrib == INVALID_FILE_ATTRIBUTES)

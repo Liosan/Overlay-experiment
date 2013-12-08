@@ -13,11 +13,11 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="OverlayInjector.cpp" />
-    <ClCompile Include="ProcessHook.cpp" />
+    <ClCompile Include="ProcessFinder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OverlayInjector.h" />
-    <ClInclude Include="ProcessHook.h" />
+    <ClInclude Include="ProcessFinder.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7D332625-C0BE-4E18-84FE-BF966EBC4146}</ProjectGuid>

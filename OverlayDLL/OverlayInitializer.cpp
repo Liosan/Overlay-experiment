@@ -28,12 +28,12 @@ std::vector<DWORD> OverlayInitializer::findThreads() const
 	std::vector<DWORD> threadIds;
 	do 
 	{ 
-		if(te32.th32OwnerProcessID == ownerPID)
+		if (te32.th32OwnerProcessID == ownerPID)
 		{
 			threadIds.push_back(te32.th32ThreadID);
 		}
 	}
-	while(Thread32Next(threadSnap, &te32));
+	while (Thread32Next(threadSnap, &te32));
 	CloseHandle(threadSnap);
 	return threadIds;
 }
@@ -69,8 +69,8 @@ void OverlayInitializer::overrideWindowProc(OverlayData & overlayData) const
 {	
 	WNDPROC const originalWndProc = reinterpret_cast<WNDPROC>(GetWindowLong(overlayData.wnd, GWL_WNDPROC));
 	overlayData.keyboardHandler = new KeyboardHandler(originalWndProc);
+	
 	LONG const result = SetWindowLong(overlayData.wnd, GWL_WNDPROC, reinterpret_cast<LONG>(KeyboardHandler::customWindowProcForwarder));
-
 	if (result == 0)
 	{
 		std::cerr << "overrideWindowProc result: " << result << ", err: " << GetLastError() << "; wnd=" << overlayData.wnd << "\n";
@@ -118,15 +118,11 @@ void OverlayInitializer::hookRendering(OverlayData & overlayData) const
 
 	std::cerr << "originalDXEndScene: " << originalDXEndScene << "; Renderer::DXEndSceneForwarder: " << Renderer::DXEndSceneForwarder << "\n";
 
-	//DWORD prot;
-	//VirtualProtect(&vtablePtr[42], sizeof(DWORD), PAGE_READWRITE, &prot);
-	//*(PDWORD)&vtablePtr[42] = (DWORD)Renderer::DXEndSceneForwarder;
-
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 	if(DetourAttach(&(PVOID&)(overlayData.renderer->originalDXEndScene), Renderer::DXEndSceneForwarder) == ERROR_INVALID_HANDLE)
 	{
-		MessageBox(NULL, "Attach of EndScene failed","Detours failure", MB_OK);
+		MessageBox(NULL, "Attach of EndScene failed", "Detours failure", MB_OK);
 	}
 	DetourTransactionCommit();
 	

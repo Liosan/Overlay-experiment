@@ -18,18 +18,18 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ProcessHook.cpp">
+    <ClCompile Include="OverlayInjector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OverlayInjector.cpp">
+    <ClCompile Include="ProcessFinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ProcessHook.h">
+    <ClInclude Include="OverlayInjector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OverlayInjector.h">
+    <ClInclude Include="ProcessFinder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

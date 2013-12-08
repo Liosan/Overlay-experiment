@@ -1,19 +1,19 @@
-#ifndef __OVERLAY_H__
-#define __OVERLAY_H__
+#ifndef __OVERLAY_INJECTOR_H__
+#define __OVERLAY_INJECTOR_H__
 
-#include "ProcessHook.h"
+#include "ProcessFinder.h"
 
 class OverlayInjector
 {
 public:
 	OverlayInjector(std::string const & processName);
 
-	// will not return until the hooked application terminates
 	void run();
 private:
+	std::string executablePath() const;
 	void injectDll();
 
-	ProcessHook processHook;
+	ProcessFinder processFinder;
 };
 
 

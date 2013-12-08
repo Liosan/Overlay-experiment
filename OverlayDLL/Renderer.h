@@ -10,10 +10,15 @@ typedef HRESULT (WINAPI * DX_EndScene_t)(
 	LPDIRECT3DDEVICE9 pDevice
 );
 
+/**
+ * Display overlay components depending on current overlay state (enabled/disabled).
+ * Does not currently support window minimizing then maximizing, resolution changes, fullscreen toggle etc.
+ */
 class Renderer
 {
 public:
 	Renderer(DX_EndScene_t const originalDXEndScene);
+	// Cease rendering. Helps with graceful termination.
 	void terminate();
 
 	static HRESULT WINAPI DXEndSceneForwarder(LPDIRECT3DDEVICE9 pDevice);
