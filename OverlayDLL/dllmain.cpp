@@ -5,6 +5,7 @@
 
 #include "OverlayInitializer.h"
 #include "OverlayData.h"
+#include "Renderer.h"
 
 OverlayData * processOverlayData;
 
@@ -45,6 +46,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved)
 		break;
 	}
 	case DLL_PROCESS_DETACH:
+		processOverlayData->renderer->terminate();
 		FreeConsole();
 		break;
 	case DLL_THREAD_ATTACH:

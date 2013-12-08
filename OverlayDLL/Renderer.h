@@ -13,6 +13,7 @@ class Renderer
 {
 public:
 	Renderer(DX_EndScene_t const originalDXEndScene);
+	void terminate();
 
 	static HRESULT WINAPI DXEndSceneForwarder(LPDIRECT3DDEVICE9 pDevice);
 	DX_EndScene_t const originalDXEndScene; // must be public so can be modified by Detours call
@@ -22,6 +23,7 @@ private:
 
 	HRESULT DXEndSceneCustom(LPDIRECT3DDEVICE9 pDevice);
 
+	bool running;
 	bool initialized;
 	LPD3DXFONT font;
 };

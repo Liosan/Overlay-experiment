@@ -3,10 +3,16 @@
 #include <iostream>
 
 Renderer::Renderer(DX_EndScene_t const originalDXEndScene):
+	running(true),
 	initialized(false),
 	font(NULL),
 	originalDXEndScene(originalDXEndScene)
 {
+}
+
+void Renderer::terminate()
+{
+	this->running = false;
 }
 
 HRESULT WINAPI Renderer::DXEndSceneForwarder(LPDIRECT3DDEVICE9 const pDevice)
@@ -16,12 +22,15 @@ HRESULT WINAPI Renderer::DXEndSceneForwarder(LPDIRECT3DDEVICE9 const pDevice)
 
 HRESULT Renderer::DXEndSceneCustom(LPDIRECT3DDEVICE9 const pDevice)
 {
-	this->initialize(pDevice);
-	this->drawOverlayHint(pDevice);
 	static bool once = true;
-	if (once) { 
-		std::cerr << "DXEndSceneCustom; calling original: " << this->originalDXEndScene << "\n"; 
-		once = false; 
+	if (this->running)
+	{
+		this->initialize(pDevice);
+		this->drawOverlayHint(pDevice);
+		if (once) { 
+			std::cerr << "DXEndSceneCustom; calling original: " << this->originalDXEndScene << "\n"; 
+			once = false; 
+		}
 	}
 	return this->originalDXEndScene(pDevice);
 }
@@ -30,6 +39,7 @@ void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
 {
 	if (!this->initialized)
 	{
+		std::cerr << "initialize with device: " << pDevice << "\n"; 
 		D3DXCreateFont(
 			pDevice, 
 			16, 
@@ -50,15 +60,11 @@ void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
 
 void Renderer::drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice)
 {
-	RECT rct;
-	rct.left = 20;
-	rct.right = 1680;
-	rct.top = 20;
-	rct.bottom = 220;
-	int result = this->font->DrawTextA(NULL, "Hello world", -1, &rct, DT_NOCLIP, 0xFFFFFFF);
-	static bool once = true;
-	if (once) { 
-		std::cerr << "drawOverlayHint complete: " << result << "\n"; 
-		once = false; 
-	}
+	std::cerr << "drawOverlayHint with device: " << pDevice << "\n"; 
+	D3DCOLOR rectColor = D3DCOLOR_XRGB(200,255,255);
+	D3DRECT BarRect = { 20, 50, 120, 120 }; 
+	pDevice->Clear(1, &BarRect, D3DCLEAR_TARGET, rectColor, 0, 0);
+	
+	RECT rct = { 20, 20, 220, 60 };
+	this->font->DrawTextA(NULL, "Hello world", -1, &rct, DT_NOCLIP, 0xFFFFFFFF);
 }
