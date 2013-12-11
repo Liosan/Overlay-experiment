@@ -15,6 +15,7 @@ void OverlayInitializer::execute(OverlayData & overlayData)
 	overlayData.wnd = this->findWindow(overlayData, threadIds);
 	this->overrideWindowProc(overlayData);
 	this->hookRendering(overlayData);
+	this->hookInput(overlayData);
 }
 
 std::vector<DWORD> OverlayInitializer::findThreads() const
@@ -101,7 +102,7 @@ UINT_PTR * OverlayInitializer::findD3dDeviceVTable(OverlayData & overlayData) co
 
 	UINT_PTR * vTablePtr = (UINT_PTR *)(*((UINT_PTR *)directXDevice));
 
-	std::cerr << "vTablePtr: " << vTablePtr << ", directXDevice: " << directXDevice << "\n";
+	std::cerr << "EndScene vTablePtr: " << vTablePtr << ", directXDevice: " << directXDevice << "\n";
 
 	directXDevice->Release();
 	directX->Release();
@@ -123,8 +124,83 @@ void OverlayInitializer::hookRendering(OverlayData & overlayData) const
 	if(DetourAttach(&(PVOID&)(overlayData.renderer->originalDXEndScene), Renderer::DXEndSceneForwarder) == ERROR_INVALID_HANDLE)
 	{
 		MessageBox(NULL, "Attach of EndScene failed", "Detours failure", MB_OK);
+		return;
 	}
 	DetourTransactionCommit();
 	
-	std::cerr << "Attach complete!\n";
+	std::cerr << "EndScene attach complete!\n";
+}
+
+UINT_PTR * OverlayInitializer::findDirectInputDeviceVTable(OverlayData & overlayData) const
+{
+	typedef HRESULT (WINAPI * DI8Create_t)(HINSTANCE, DWORD, REFIID, LPVOID *, LPUNKNOWN);
+	DI8Create_t pCreate = (DI8Create_t)(GetProcAddress(GetModuleHandle("dinput8.dll"), "DirectInput8Create"));
+	if (pCreate == NULL)
+	{
+		std::cerr << "Locating DirectInput8Create failed!\n";
+		return NULL;
+	}
+
+	LPDIRECTINPUT8 pDIObject = NULL;
+
+	if (pCreate(
+			GetModuleHandle(NULL),
+			DIRECTINPUT_VERSION,
+			IID_IDirectInput8,
+			(void**)&pDIObject,
+			NULL
+		) != DI_OK
+	) 
+	{
+		std::cerr << "DirectInput creation failed!\n";
+		return NULL;
+	}
+
+	LPDIRECTINPUTDEVICE8 pDIMouseDevice = NULL;
+	if (pDIObject->CreateDevice(GUID_SysMouse, &pDIMouseDevice, NULL) != DI_OK)
+	{
+		std::cerr << "DirectInput mouse device creation failed!\n";
+		return NULL;
+	}
+
+	UINT_PTR * vTablePtr = (UINT_PTR *)(*((UINT_PTR *)pDIMouseDevice));
+	std::cerr << "DirectInput device vTablePtr: " << vTablePtr << ", pDIMouseDevice: " << pDIMouseDevice << "\n";
+
+	pDIMouseDevice->Release();
+	pDIObject->Release();
+	return vTablePtr;
+}
+
+typedef HRESULT (WINAPI * DI_GetDeviceData_t)(IDirectInputDeviceW *, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD);
+DI_GetDeviceData_t originalDIGetDeviceData;
+
+HRESULT WINAPI DIGetDeviceDataHook(IDirectInputDeviceW * pDevice,
+	DWORD cbObjectData,
+         LPDIDEVICEOBJECTDATA rgdod,
+         LPDWORD pdwInOut,
+         DWORD dwFlags)
+{
+	std::cerr << "DIGetDeviceDataHook! originalDIGetDeviceData: " << originalDIGetDeviceData << "\n";
+	return originalDIGetDeviceData(pDevice, cbObjectData, rgdod, pdwInOut, dwFlags);
+}
+
+void OverlayInitializer::hookInput(OverlayData & overlayData) const
+{
+	std::cerr << "Attempting DirectInput hooks...\n";
+	UINT_PTR * vtablePtr = this->findDirectInputDeviceVTable(overlayData);	
+
+	originalDIGetDeviceData = (DI_GetDeviceData_t) vtablePtr[10]; // offset in dinput.h
+
+	std::cerr << "originalDIGetDeviceData: " << originalDIGetDeviceData << "; DIGetDeviceDataHook: " << DIGetDeviceDataHook << "\n";
+
+	DetourTransactionBegin();
+	DetourUpdateThread(GetCurrentThread());
+	if(DetourAttach(&(PVOID&)(originalDIGetDeviceData), DIGetDeviceDataHook) == ERROR_INVALID_HANDLE)
+	{
+		MessageBox(NULL, "Attach of DirectInput GetDeviceData failed", "Detours failure", MB_OK);
+		return;
+	}
+	DetourTransactionCommit();
+
+	std::cerr << "DirectInput attach complete!\n";	
 }

@@ -2,6 +2,8 @@
 #define __OVERLAY_INITIALIZER_H__
 
 #include <Windows.h>
+#define DIRECTINPUT_VERSION 0x0800
+#include <dinput.h> 
 #include <vector>
 
 char const * const WindowTitle = "The Witcher";
@@ -41,13 +43,17 @@ private:
 	/**
 	 * Find adress of vtable for d3dDevice by creating a temporary object.
 	 */
-	UINT_PTR * OverlayInitializer::findD3dDeviceVTable(OverlayData & overlayData) const;
+	UINT_PTR * findD3dDeviceVTable(OverlayData & overlayData) const;
 
 	/**
 	 * Creates Renderer.
 	 * Hooks DirectX methods so that the Renderer can be used.
 	 */
 	void hookRendering(OverlayData & overlayData) const;
+
+	UINT_PTR * findDirectInputDeviceVTable(OverlayData & overlayData) const;
+
+	void hookInput(OverlayData & overlayData) const;
 };
 
 #endif
