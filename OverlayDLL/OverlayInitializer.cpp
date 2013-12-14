@@ -1,6 +1,6 @@
 #include "OverlayInitializer.h"
 #include "OverlayData.h"
-#include "KeyboardHandler.h"
+#include "InputHandler.h"
 #include "Renderer.h"
 
 #include <tlhelp32.h>
@@ -69,9 +69,9 @@ HWND OverlayInitializer::findWindow(OverlayData & overlayData, std::vector<DWORD
 void OverlayInitializer::overrideWindowProc(OverlayData & overlayData) const
 {	
 	WNDPROC const originalWndProc = reinterpret_cast<WNDPROC>(GetWindowLong(overlayData.wnd, GWL_WNDPROC));
-	overlayData.keyboardHandler = new KeyboardHandler(originalWndProc);
+	overlayData.inputHandler = new InputHandler(originalWndProc);
 	
-	LONG const result = SetWindowLong(overlayData.wnd, GWL_WNDPROC, reinterpret_cast<LONG>(KeyboardHandler::customWindowProcForwarder));
+	LONG const result = SetWindowLong(overlayData.wnd, GWL_WNDPROC, reinterpret_cast<LONG>(InputHandler::customWindowProcForwarder));
 	if (result == 0)
 	{
 		std::cerr << "overrideWindowProc result: " << result << ", err: " << GetLastError() << "; wnd=" << overlayData.wnd << "\n";
@@ -171,57 +171,19 @@ UINT_PTR * OverlayInitializer::findDirectInputDeviceVTable(OverlayData & overlay
 	return vTablePtr;
 }
 
-typedef HRESULT (WINAPI * DI_GetDeviceData_t)(IDirectInputDeviceW *, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD);
-DI_GetDeviceData_t originalDIGetDeviceData;
-
-HRESULT WINAPI DIGetDeviceDataHook( // TODO this should be in KeyboardHandler
-	IDirectInputDeviceW * pDevice,
-	DWORD cbObjectData,
-	LPDIDEVICEOBJECTDATA rgdod,
-	LPDWORD pdwInOut,
-	DWORD dwFlags
-)
-{
-	int const bufSize = *pdwInOut;
-	HRESULT const result = originalDIGetDeviceData(pDevice, cbObjectData, rgdod, pdwInOut, dwFlags);
-	
-	if (rgdod == NULL)
-	{
-		return result;
-	}
-
-	int const count = *pdwInOut;
-	if (count > 0) 
-	{
-		std::cerr << "DIGetDeviceDataHook! pDevice: " << pDevice << "; cbObjectData: " << cbObjectData << 
-			"; rgdod: " << rgdod << "; pwdInOut: " << *pdwInOut << "; bufSize: " << bufSize << "; dwFlags: " << dwFlags << "; result: " << result << "\n";
-
-		std::cerr << "Codes: ";
-		for (int i = 0; i < count; i++) 
-		{
-			std::cerr << rgdod[i].dwOfs << "; ";
-		}
-		std::cerr << "\n";
-	}
-	if (OverlayData::getSingleton()->overlayEnabled)
-	{
-		*pdwInOut = 0;
-	}
-	return result;
-}
-
 void OverlayInitializer::hookKeyboard(OverlayData & overlayData) const
 {
 	std::cerr << "Attempting DirectInput keyboard hooks...\n";
 	UINT_PTR * vtablePtr = this->findDirectInputDeviceVTable(overlayData);	
 
-	originalDIGetDeviceData = (DI_GetDeviceData_t) vtablePtr[10]; // offset in dinput.h
+	OverlayData::getSingleton()->inputHandler->originalDIGetDeviceData = (DI_GetDeviceData_t) vtablePtr[10]; // offset in dinput.h
 
-	std::cerr << "originalDIGetDeviceData: " << originalDIGetDeviceData << "; DIGetDeviceDataHook: " << DIGetDeviceDataHook << "\n";
+	std::cerr << "originalDIGetDeviceData: " << OverlayData::getSingleton()->inputHandler->originalDIGetDeviceData 
+		<< "; InputHandler::DIGetDeviceDataForwarder: " << InputHandler::DIGetDeviceDataForwarder << "\n";
 
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
-	if(DetourAttach(&(PVOID&)(originalDIGetDeviceData), DIGetDeviceDataHook) == ERROR_INVALID_HANDLE)
+	if(DetourAttach(&(PVOID&)(OverlayData::getSingleton()->inputHandler->originalDIGetDeviceData), InputHandler::DIGetDeviceDataForwarder) == ERROR_INVALID_HANDLE)
 	{
 		MessageBox(NULL, "Attach of DirectInput GetDeviceData failed", "Detours failure", MB_OK);
 		return;

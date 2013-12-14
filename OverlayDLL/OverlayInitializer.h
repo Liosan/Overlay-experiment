@@ -2,9 +2,8 @@
 #define __OVERLAY_INITIALIZER_H__
 
 #include <Windows.h>
-#define DIRECTINPUT_VERSION 0x0800
-#include <dinput.h> 
 #include <vector>
+#include "InputHandler.h"
 
 char const * const WindowTitle = "The Witcher";
 
@@ -35,8 +34,8 @@ private:
 	static BOOL CALLBACK EnumThreadWndProc(HWND wnd, LPARAM lParam);
 
 	/**
-	 * Creates KeyboardHandler.
-	 * Changes the used window proc so that all messages pass through KeyboardHandler.
+	 * Creates InputHandler.
+	 * Changes the used window proc so that all messages pass through InputHandler.
 	 */
 	void overrideWindowProc(OverlayData & overlayData) const;
 

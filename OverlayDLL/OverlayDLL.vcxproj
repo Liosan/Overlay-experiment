@@ -77,7 +77,7 @@
   <ItemGroup>
     <ClInclude Include="detours\detours.h" />
     <ClInclude Include="detours\detver.h" />
-    <ClInclude Include="KeyboardHandler.h" />
+    <ClInclude Include="InputHandler.h" />
     <ClInclude Include="OverlayData.h" />
     <ClInclude Include="OverlayInitializer.h" />
     <ClInclude Include="Renderer.h" />
@@ -96,7 +96,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="KeyboardHandler.cpp" />
+    <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="OverlayData.cpp" />
     <ClCompile Include="OverlayInitializer.cpp" />
     <ClCompile Include="Renderer.cpp" />

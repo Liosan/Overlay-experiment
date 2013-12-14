@@ -4,7 +4,7 @@
 #include <Windows.h>
 #include <vector>
 
-class KeyboardHandler;
+class InputHandler;
 class Renderer;
 
 /**
@@ -19,7 +19,7 @@ public:
 	HWND wnd;
 	bool overlayEnabled;
 
-	KeyboardHandler * keyboardHandler;
+	InputHandler * inputHandler;
 	Renderer * renderer;
 
 	static OverlayData * getSingleton();
