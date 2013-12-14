@@ -53,7 +53,7 @@ private:
 
 	UINT_PTR * findDirectInputDeviceVTable(OverlayData & overlayData) const;
 
-	void hookInput(OverlayData & overlayData) const;
+	void hookKeyboard(OverlayData & overlayData) const;
 };
 
 #endif

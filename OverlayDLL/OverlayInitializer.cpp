@@ -15,7 +15,7 @@ void OverlayInitializer::execute(OverlayData & overlayData)
 	overlayData.wnd = this->findWindow(overlayData, threadIds);
 	this->overrideWindowProc(overlayData);
 	this->hookRendering(overlayData);
-	this->hookInput(overlayData);
+	this->hookKeyboard(overlayData);
 }
 
 std::vector<DWORD> OverlayInitializer::findThreads() const
@@ -156,17 +156,17 @@ UINT_PTR * OverlayInitializer::findDirectInputDeviceVTable(OverlayData & overlay
 		return NULL;
 	}
 
-	LPDIRECTINPUTDEVICE8 pDIMouseDevice = NULL; // TODO keyboard should be used
-	if (pDIObject->CreateDevice(GUID_SysMouse, &pDIMouseDevice, NULL) != DI_OK)
+	LPDIRECTINPUTDEVICE8 pDIKeyboardDevice = NULL; // TODO keyboard should be used
+	if (pDIObject->CreateDevice(GUID_SysKeyboard, &pDIKeyboardDevice, NULL) != DI_OK)
 	{
-		std::cerr << "DirectInput mouse device creation failed!\n";
+		std::cerr << "DirectInput keyboard device creation failed!\n";
 		return NULL;
 	}
 
-	UINT_PTR * vTablePtr = (UINT_PTR *)(*((UINT_PTR *)pDIMouseDevice));
-	std::cerr << "DirectInput device vTablePtr: " << vTablePtr << ", pDIMouseDevice: " << pDIMouseDevice << "\n";
+	UINT_PTR * vTablePtr = (UINT_PTR *)(*((UINT_PTR *)pDIKeyboardDevice));
+	std::cerr << "DirectInput device vTablePtr: " << vTablePtr << ", pDIKeyboardDevice: " << pDIKeyboardDevice << "\n";
 
-	pDIMouseDevice->Release();
+	pDIKeyboardDevice->Release();
 	pDIObject->Release();
 	return vTablePtr;
 }
@@ -185,6 +185,11 @@ HRESULT WINAPI DIGetDeviceDataHook( // TODO this should be in KeyboardHandler
 	int const bufSize = *pdwInOut;
 	HRESULT const result = originalDIGetDeviceData(pDevice, cbObjectData, rgdod, pdwInOut, dwFlags);
 	
+	if (rgdod == NULL)
+	{
+		return result;
+	}
+
 	int const count = *pdwInOut;
 	if (count > 0) 
 	{
@@ -205,9 +210,9 @@ HRESULT WINAPI DIGetDeviceDataHook( // TODO this should be in KeyboardHandler
 	return result;
 }
 
-void OverlayInitializer::hookInput(OverlayData & overlayData) const
+void OverlayInitializer::hookKeyboard(OverlayData & overlayData) const
 {
-	std::cerr << "Attempting DirectInput hooks...\n";
+	std::cerr << "Attempting DirectInput keyboard hooks...\n";
 	UINT_PTR * vtablePtr = this->findDirectInputDeviceVTable(overlayData);	
 
 	originalDIGetDeviceData = (DI_GetDeviceData_t) vtablePtr[10]; // offset in dinput.h

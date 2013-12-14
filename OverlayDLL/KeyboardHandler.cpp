@@ -22,6 +22,23 @@ LRESULT KeyboardHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPA
 			OverlayData::getSingleton()->overlayEnabled = !OverlayData::getSingleton()->overlayEnabled;
 		}
 		break;
+	case WM_LBUTTONDBLCLK:
+	case WM_LBUTTONDOWN:
+	case WM_LBUTTONUP:
+	case WM_RBUTTONDBLCLK:
+	case WM_RBUTTONDOWN:
+	case WM_RBUTTONUP:
+	case WM_MBUTTONDBLCLK:
+	case WM_MBUTTONDOWN:
+	case WM_MBUTTONUP:
+	case WM_MOUSEWHEEL:
+	case WM_MOUSEHWHEEL:
+	case WM_MOUSEMOVE:
+		if (OverlayData::getSingleton()->overlayEnabled)
+		{
+			msg = WM_NULL;
+		}
+		break;
 	}
 	return CallWindowProc(originalWndProc, wnd, msg, wParam, lParam);
 }
