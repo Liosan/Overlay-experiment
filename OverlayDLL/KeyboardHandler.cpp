@@ -15,7 +15,7 @@ LRESULT CALLBACK KeyboardHandler::customWindowProcForwarder(HWND wnd, UINT msg, 
 LRESULT KeyboardHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg)
-	{
+	{ // TODO this should be based on DI_GetDeviceData_t
 	case WM_KEYUP:
 		if ((wParam == VK_SPACE) && (GetKeyState(VK_CONTROL) != 0))
 		{

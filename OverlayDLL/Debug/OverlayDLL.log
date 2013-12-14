@@ -1,10 +1,12 @@
-﻿Build started 13-12-11 22:44:40.
+﻿Build started 13-12-14 17:23:29.
      1>Project "E:\Documents\C++ Projects\Overlay\OVerlay\OverlayDLL\OverlayDLL.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Touching "Debug\OverlayDLL.unsuccessfulbuild".
+         Creating "Debug\OverlayDLL.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D OVERLAYDLL_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt OverlayInitializer.cpp
+         g:\Program Files\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D OVERLAYDLL_EXPORTS /D _WINDLL /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt KeyboardHandler.cpp OverlayInitializer.cpp
          OverlayInitializer.cpp
+         KeyboardHandler.cpp
+         Generating Code...
          All outputs are up-to-date.
        ManifestResourceCompile:
          All outputs are up-to-date.
@@ -33,4 +35,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.28
+Time Elapsed 00:00:02.93

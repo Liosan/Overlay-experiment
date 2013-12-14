@@ -156,7 +156,7 @@ UINT_PTR * OverlayInitializer::findDirectInputDeviceVTable(OverlayData & overlay
 		return NULL;
 	}
 
-	LPDIRECTINPUTDEVICE8 pDIMouseDevice = NULL;
+	LPDIRECTINPUTDEVICE8 pDIMouseDevice = NULL; // TODO keyboard should be used
 	if (pDIObject->CreateDevice(GUID_SysMouse, &pDIMouseDevice, NULL) != DI_OK)
 	{
 		std::cerr << "DirectInput mouse device creation failed!\n";
@@ -174,14 +174,35 @@ UINT_PTR * OverlayInitializer::findDirectInputDeviceVTable(OverlayData & overlay
 typedef HRESULT (WINAPI * DI_GetDeviceData_t)(IDirectInputDeviceW *, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD);
 DI_GetDeviceData_t originalDIGetDeviceData;
 
-HRESULT WINAPI DIGetDeviceDataHook(IDirectInputDeviceW * pDevice,
+HRESULT WINAPI DIGetDeviceDataHook( // TODO this should be in KeyboardHandler
+	IDirectInputDeviceW * pDevice,
 	DWORD cbObjectData,
-         LPDIDEVICEOBJECTDATA rgdod,
-         LPDWORD pdwInOut,
-         DWORD dwFlags)
+	LPDIDEVICEOBJECTDATA rgdod,
+	LPDWORD pdwInOut,
+	DWORD dwFlags
+)
 {
-	std::cerr << "DIGetDeviceDataHook! originalDIGetDeviceData: " << originalDIGetDeviceData << "\n";
-	return originalDIGetDeviceData(pDevice, cbObjectData, rgdod, pdwInOut, dwFlags);
+	int const bufSize = *pdwInOut;
+	HRESULT const result = originalDIGetDeviceData(pDevice, cbObjectData, rgdod, pdwInOut, dwFlags);
+	
+	int const count = *pdwInOut;
+	if (count > 0) 
+	{
+		std::cerr << "DIGetDeviceDataHook! pDevice: " << pDevice << "; cbObjectData: " << cbObjectData << 
+			"; rgdod: " << rgdod << "; pwdInOut: " << *pdwInOut << "; bufSize: " << bufSize << "; dwFlags: " << dwFlags << "; result: " << result << "\n";
+
+		std::cerr << "Codes: ";
+		for (int i = 0; i < count; i++) 
+		{
+			std::cerr << rgdod[i].dwOfs << "; ";
+		}
+		std::cerr << "\n";
+	}
+	if (OverlayData::getSingleton()->overlayEnabled)
+	{
+		*pdwInOut = 0;
+	}
+	return result;
 }
 
 void OverlayInitializer::hookInput(OverlayData & overlayData) const

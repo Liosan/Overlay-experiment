@@ -8,7 +8,7 @@
  * Ctrl-space is detected and causes the the Overlay to be enabled.
  * All other messages are forwarded to the originalWndProc.
  */
-class KeyboardHandler
+class KeyboardHandler // TODO handle GetDeviceData, and keyboard. TODO input handler, grab mouse position
 {
 public:
 	KeyboardHandler(WNDPROC const originalWndProc);
