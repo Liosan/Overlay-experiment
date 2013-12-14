@@ -24,9 +24,11 @@ public:
 	static HRESULT WINAPI DXEndSceneForwarder(LPDIRECT3DDEVICE9 pDevice);
 	DX_EndScene_t const originalDXEndScene; // must be public so can be modified by Detours call
 private:	
+	std::string pathToSpriteDirectory() const;
 	void initialize(LPDIRECT3DDEVICE9 const pDevice);
 
 	void drawText(int x, int y, int w, int h, std::string const & text);
+	void drawQuad(LPDIRECT3DDEVICE9 const pDevice, int x, int y, int w, int h, DWORD color, IDirect3DTexture9 * texture);
 
 	void drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice);
 	void drawFullOverlay(LPDIRECT3DDEVICE9 const pDevice);
@@ -36,6 +38,9 @@ private:
 	bool running;
 	bool initialized;
 	LPD3DXFONT font;
+	LPD3DXSPRITE sprite;
+	LPDIRECT3DTEXTURE9 gogTexture;
+	LPDIRECT3DTEXTURE9 greyTexture;
 
 	int windowWidth;
 	int windowHeight;

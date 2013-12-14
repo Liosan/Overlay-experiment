@@ -45,6 +45,16 @@ HRESULT Renderer::DXEndSceneCustom(LPDIRECT3DDEVICE9 const pDevice)
 	return this->originalDXEndScene(pDevice);
 }
 
+std::string Renderer::pathToSpriteDirectory() const
+{	
+	char buf[250];
+	GetModuleFileName(GetModuleHandle("OverlayDLL.dll"), buf, 250);
+	
+	std::string pathToDll(buf);
+	pathToDll = pathToDll.substr(0, pathToDll.find_last_of('\\')); // remove .dll file
+	return pathToDll.substr(0, pathToDll.find_last_of('\\')) + "\\"; // remove Debug\ dir
+}
+
 void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
 {
 	if (!this->initialized)
@@ -71,7 +81,25 @@ void Renderer::initialize(LPDIRECT3DDEVICE9 const pDevice)
 		GetWindowRect(OverlayData::getSingleton()->wnd, &windowRect);		
 		this->windowWidth = windowRect.right - windowRect.left;
 		this->windowHeight = windowRect.bottom - windowRect.top;
+		D3DVIEWPORT9 viewport;
+		pDevice->GetViewport(&viewport);
+		std::cerr << "Viewport: " << viewport.X << " / " << viewport.Y << " "
+			<< viewport.Width << " / " << viewport.Height 
+			<< " MinZ: " << viewport.MinZ << ", MaxZ: " << viewport.MaxZ << "\n";
 
+		// create sprites and textures
+		D3DXCreateSprite(pDevice, &this->sprite);
+		std::string const pathToSpriteDir = this->pathToSpriteDirectory();
+		HRESULT result;
+		
+		std::string greyTexPath = pathToSpriteDir + "grey.png";
+		result = D3DXCreateTextureFromFile(pDevice, greyTexPath.c_str(), &this->greyTexture);
+		if (result !=  D3D_OK) std::cerr << "Unable to load " << greyTexPath << "!\n";
+		
+		std::string gogTexPath = pathToSpriteDir + "gog.png";
+		D3DXCreateTextureFromFile(pDevice, gogTexPath.c_str(), &this->gogTexture);
+		if (result !=  D3D_OK) std::cerr << "Unable to load " << gogTexPath << "!\n";
+		
 		this->initialized = true;
 	}
 }
@@ -81,6 +109,20 @@ void Renderer::drawText(int x, int y, int w, int h, std::string const & text)
 	RECT rct = { x, y, x + w, y + h };
 	this->font->DrawTextA(NULL, text.c_str(), -1, &rct, DT_NOCLIP, 0xFFFFFFFF);
 }
+
+void Renderer::drawQuad(LPDIRECT3DDEVICE9 const pDevice, int x, int y, int w, int h, DWORD color, IDirect3DTexture9 * texture)
+{
+	// VBs would be a faster way, but they seemed a bit overkill
+	// TODO handle x, y, w, h
+	D3DXVECTOR3 pos;
+	pos.x = 15.f;
+	pos.y = 15.f;
+	pos.z = 0.1f;
+	this->sprite->Begin(D3DXSPRITE_ALPHABLEND);
+	this->sprite->Draw(texture, 0, 0, &pos, color);
+	this->sprite->End();
+}
+
 
 void Renderer::drawOverlayHint(LPDIRECT3DDEVICE9 const pDevice)
 {	
@@ -93,8 +135,7 @@ void Renderer::drawFullOverlay(LPDIRECT3DDEVICE9 const pDevice)
 	int const centerY = this->windowHeight / 2;
 
 	// shadow the screen
-	D3DRECT FullScreenRect = { 0, 0, this->windowWidth, this->windowHeight }; 
-	pDevice->Clear(1, &FullScreenRect, D3DCLEAR_TARGET, 0xAA000000, 0, 0);
+	this->drawQuad(pDevice, 0, 0, this->windowWidth, this->windowHeight, 0xFFAAAAAA, this->gogTexture);
 
 	// upper-center text
 	this->drawText(centerX - 100, 20, 220, 50, "Overlay Test Application");
