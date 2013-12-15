@@ -1,5 +1,8 @@
 #include "InputHandler.h"
 #include "OverlayData.h"
+#include "Gui.h"
+#include <iostream>
+#include <Windowsx.h>
 
 
 InputHandler::InputHandler(WNDPROC const originalWndProc):
@@ -42,16 +45,37 @@ LRESULT InputHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 	case WM_MBUTTONDBLCLK:
 	case WM_MBUTTONDOWN:
 	case WM_MBUTTONUP:
+	case WM_XBUTTONDBLCLK:
+	case WM_XBUTTONDOWN:
+	case WM_XBUTTONUP:
 	case WM_MOUSEWHEEL:
 	case WM_MOUSEHWHEEL:
 	case WM_MOUSEMOVE:
 		if (OverlayData::getSingleton()->overlayEnabled)
 		{
+			this->forwardMessage(msg, lParam);
 			msg = WM_NULL;
 		}
 		break;
 	}
 	return CallWindowProc(originalWndProc, wnd, msg, wParam, lParam);
+}
+
+void InputHandler::forwardMessage(UINT msg, LPARAM lParam)
+{
+	Gui * gui = OverlayData::getSingleton()->gui;
+	switch(msg)
+	{
+	case WM_LBUTTONUP:
+		gui->mouseButtonUp();
+		break;
+	case WM_LBUTTONDOWN:
+		gui->mouseButtonDown();
+		break;
+	case WM_MOUSEMOVE:
+		gui->mouseMove(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+		break;
+	}
 }
 
 HRESULT WINAPI InputHandler::DIGetDeviceDataCustom(

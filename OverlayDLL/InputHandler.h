@@ -28,6 +28,8 @@ public:
 	);
 private:
 	LRESULT customWindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
+	void forwardMessage(UINT msg, LPARAM lParam);
+
 	HRESULT WINAPI DIGetDeviceDataCustom(
 		IDirectInputDeviceW * pDevice,
 		DWORD cbObjectData,

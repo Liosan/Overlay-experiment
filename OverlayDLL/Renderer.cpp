@@ -99,15 +99,16 @@ void Renderer::drawQuad(float x, float y, float z, float w, float h, DWORD color
 {
 	// using VBs would be faster, but they seemed a bit overkill
 	D3DXVECTOR3 pos;
-	pos.x = x;
-	pos.y = y;
+	pos.x = 0;
+	pos.y = 0;
 	pos.z = z;
 
 	D3DSURFACE_DESC textureDesc;
 	texture->GetLevelDesc(0, &textureDesc);
 	D3DXVECTOR2 scalingFactor(w / (float)textureDesc.Width, h / (float)textureDesc.Height);
+	D3DXVECTOR2 offset(x, y);
 	D3DXMATRIX spriteMatrix;
-	D3DXMatrixTransformation2D(&spriteMatrix, NULL, 0, &scalingFactor, NULL, 0, NULL);	
+	D3DXMatrixTransformation2D(&spriteMatrix, NULL, 0, &scalingFactor, NULL, 0, &offset);	
 
 	this->sprite->Begin(D3DXSPRITE_ALPHABLEND);
 	this->sprite->SetTransform (&spriteMatrix);

@@ -1,4 +1,4 @@
-﻿Build started 13-12-15 13:22:27.
+﻿Build started 13-12-15 22:21:40.
      1>Project "E:\Documents\C++ Projects\Overlay\OVerlay\OverlayDLL\OverlayDLL.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Debug\OverlayDLL.unsuccessfulbuild" because "AlwaysCreate" was specified.
@@ -34,4 +34,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.65
+Time Elapsed 00:00:01.56
