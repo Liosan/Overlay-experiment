@@ -2,6 +2,7 @@
 #include "OverlayData.h"
 #include "InputHandler.h"
 #include "Renderer.h"
+#include "Gui.h"
 
 #include <tlhelp32.h>
 #include <iostream>
@@ -112,6 +113,8 @@ UINT_PTR * OverlayInitializer::findD3dDeviceVTable(OverlayData & overlayData) co
 
 void OverlayInitializer::hookRendering(OverlayData & overlayData) const
 {
+	overlayData.gui = new Gui();
+
 	UINT_PTR * vtablePtr = this->findD3dDeviceVTable(overlayData);	
 
 	DX_EndScene_t const originalDXEndScene = (DX_EndScene_t) vtablePtr[42]; // offset in d3d9.h for 9.0c

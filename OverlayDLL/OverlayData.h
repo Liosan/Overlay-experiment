@@ -6,6 +6,7 @@
 
 class InputHandler;
 class Renderer;
+class Gui;
 
 /**
  * Stores the state of the overlay, as well as the pointers to it's components.
@@ -21,8 +22,9 @@ public:
 
 	InputHandler * inputHandler;
 	Renderer * renderer;
+	Gui * gui;
 
-	static OverlayData * getSingleton();
+	static OverlayData * getSingleton(); // TODO use only in forwarders, not in objects
 	static void allocateSingleton();
 private:
 	// seems like the most convenient way to store crucial data since we are in an injected DLL.
