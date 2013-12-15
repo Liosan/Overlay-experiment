@@ -95,15 +95,22 @@ void Renderer::drawText(int x, int y, int w, int h, std::string const & text)
 	this->font->DrawTextA(NULL, text.c_str(), -1, &rct, DT_NOCLIP, 0xFFFFFFFF);
 }
 
-void Renderer::drawQuad(int x, int y, int w, int h, DWORD color, IDirect3DTexture9 * texture)
+void Renderer::drawQuad(float x, float y, float z, float w, float h, DWORD color, IDirect3DTexture9 * texture)
 {
 	// using VBs would be faster, but they seemed a bit overkill
-	// TODO handle x, y, w, h
 	D3DXVECTOR3 pos;
-	pos.x = 15.f;
-	pos.y = 15.f;
-	pos.z = 0.1f;
+	pos.x = x;
+	pos.y = y;
+	pos.z = z;
+
+	D3DSURFACE_DESC textureDesc;
+	texture->GetLevelDesc(0, &textureDesc);
+	D3DXVECTOR2 scalingFactor(w / (float)textureDesc.Width, h / (float)textureDesc.Height);
+	D3DXMATRIX spriteMatrix;
+	D3DXMatrixTransformation2D(&spriteMatrix, NULL, 0, &scalingFactor, NULL, 0, NULL);	
+
 	this->sprite->Begin(D3DXSPRITE_ALPHABLEND);
+	this->sprite->SetTransform (&spriteMatrix);
 	this->sprite->Draw(texture, 0, 0, &pos, color);
 	this->sprite->End();
 }

@@ -32,10 +32,10 @@ void Gui::drawFullOverlay()
 	int const centerY = this->windowHeight / 2;
 
 	// shadow the screen
-	renderer->drawQuad(0, 0, this->windowWidth, this->windowHeight, 0xFFFFFFFF, renderer->greyTexture);
+	renderer->drawQuad(0, 0, 0.0f, (float)this->windowWidth, (float)this->windowHeight, 0x77FFFFFF, renderer->greyTexture);
 
 	// gog logo
-	renderer->drawQuad(15, 15, 64, 64, 0xFFFFFFFF, renderer->gogTexture);
+	renderer->drawQuad(15, 15, 0.01f, 64, 64, 0xFFFFFFFF, renderer->gogTexture);
 
 	// upper-center text
 	renderer->drawText(centerX - 100, 20, 220, 50, "Overlay Test Application");

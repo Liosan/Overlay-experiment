@@ -22,7 +22,7 @@ public:
 	void terminate();
 		
 	void drawText(int x, int y, int w, int h, std::string const & text);
-	void drawQuad(int x, int y, int w, int h, DWORD color, IDirect3DTexture9 * texture);
+	void drawQuad(float x, float y, float z, float w, float h, DWORD color, IDirect3DTexture9 * texture);
 
 	static HRESULT WINAPI DXEndSceneForwarder(LPDIRECT3DDEVICE9 pDevice);
 	DX_EndScene_t const originalDXEndScene; // must be public so can be modified by Detours call
