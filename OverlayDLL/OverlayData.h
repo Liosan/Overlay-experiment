@@ -24,7 +24,7 @@ public:
 	Renderer * renderer;
 	Gui * gui;
 
-	static OverlayData * getSingleton(); // TODO use only in forwarders, not in objects
+	static OverlayData * getSingleton(); 
 	static void allocateSingleton();
 private:
 	// seems like the most convenient way to store crucial data since we are in an injected DLL.

@@ -70,7 +70,7 @@ HWND OverlayInitializer::findWindow(OverlayData & overlayData, std::vector<DWORD
 void OverlayInitializer::overrideWindowProc(OverlayData & overlayData) const
 {	
 	WNDPROC const originalWndProc = reinterpret_cast<WNDPROC>(GetWindowLong(overlayData.wnd, GWL_WNDPROC));
-	overlayData.inputHandler = new InputHandler(originalWndProc);
+	overlayData.inputHandler = new InputHandler(overlayData, originalWndProc);
 	
 	LONG const result = SetWindowLong(overlayData.wnd, GWL_WNDPROC, reinterpret_cast<LONG>(InputHandler::customWindowProcForwarder));
 	if (result == 0)
@@ -113,7 +113,7 @@ UINT_PTR * OverlayInitializer::findD3dDeviceVTable(OverlayData & overlayData) co
 
 void OverlayInitializer::hookRendering(OverlayData & overlayData) const
 {
-	overlayData.gui = new Gui();
+	overlayData.gui = new Gui(overlayData);
 
 	UINT_PTR * vtablePtr = this->findD3dDeviceVTable(overlayData);	
 
@@ -159,7 +159,7 @@ UINT_PTR * OverlayInitializer::findDirectInputDeviceVTable(OverlayData & overlay
 		return NULL;
 	}
 
-	LPDIRECTINPUTDEVICE8 pDIKeyboardDevice = NULL; // TODO keyboard should be used
+	LPDIRECTINPUTDEVICE8 pDIKeyboardDevice = NULL; 
 	if (pDIObject->CreateDevice(GUID_SysKeyboard, &pDIKeyboardDevice, NULL) != DI_OK)
 	{
 		std::cerr << "DirectInput keyboard device creation failed!\n";
@@ -179,14 +179,14 @@ void OverlayInitializer::hookKeyboard(OverlayData & overlayData) const
 	std::cerr << "Attempting DirectInput keyboard hooks...\n";
 	UINT_PTR * vtablePtr = this->findDirectInputDeviceVTable(overlayData);	
 
-	OverlayData::getSingleton()->inputHandler->originalDIGetDeviceData = (DI_GetDeviceData_t) vtablePtr[10]; // offset in dinput.h
+	overlayData.inputHandler->originalDIGetDeviceData = (DI_GetDeviceData_t) vtablePtr[10]; // offset in dinput.h
 
-	std::cerr << "originalDIGetDeviceData: " << OverlayData::getSingleton()->inputHandler->originalDIGetDeviceData 
+	std::cerr << "originalDIGetDeviceData: " << overlayData.inputHandler->originalDIGetDeviceData 
 		<< "; InputHandler::DIGetDeviceDataForwarder: " << InputHandler::DIGetDeviceDataForwarder << "\n";
 
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
-	if(DetourAttach(&(PVOID&)(OverlayData::getSingleton()->inputHandler->originalDIGetDeviceData), InputHandler::DIGetDeviceDataForwarder) == ERROR_INVALID_HANDLE)
+	if(DetourAttach(&(PVOID&)(overlayData.inputHandler->originalDIGetDeviceData), InputHandler::DIGetDeviceDataForwarder) == ERROR_INVALID_HANDLE)
 	{
 		MessageBox(NULL, "Attach of DirectInput GetDeviceData failed", "Detours failure", MB_OK);
 		return;

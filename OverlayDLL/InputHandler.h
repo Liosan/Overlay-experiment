@@ -5,6 +5,8 @@
 #define DIRECTINPUT_VERSION 0x0800
 #include <dinput.h> 
 
+struct OverlayData;
+
 typedef HRESULT (WINAPI * DI_GetDeviceData_t)(IDirectInputDeviceW *, DWORD, LPDIDEVICEOBJECTDATA, LPDWORD, DWORD);
 
 /**
@@ -16,7 +18,7 @@ typedef HRESULT (WINAPI * DI_GetDeviceData_t)(IDirectInputDeviceW *, DWORD, LPDI
 class InputHandler
 {
 public:
-	InputHandler(WNDPROC const originalWndProc);
+	InputHandler(OverlayData & overlayData, WNDPROC const originalWndProc);
 
 	static LRESULT CALLBACK customWindowProcForwarder(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
 	static HRESULT WINAPI DIGetDeviceDataForwarder(
@@ -39,6 +41,7 @@ private:
 	);
 
 public:
+	OverlayData & overlayData;
 	WNDPROC const originalWndProc;
 	DI_GetDeviceData_t originalDIGetDeviceData; // modified by Detours
 };

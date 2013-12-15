@@ -3,7 +3,8 @@
 #include "Renderer.h"
 #include <iostream>
 
-Gui::Gui():
+Gui::Gui(OverlayData & overlayData):
+	overlayData(overlayData),
 	buttonState(INACTIVE)
 {
 }
@@ -13,7 +14,7 @@ void Gui::mouseButtonUp()
 	if (this->buttonState == CLICK)
 	{
 		this->buttonState = INACTIVE;
-		OverlayData::getSingleton()->overlayEnabled = false;
+		this->overlayData.overlayEnabled = false;
 	}
 }
 
@@ -42,13 +43,12 @@ void Gui::drawOverlay()
 {
 	// read window size		
 	RECT windowRect;
-	GetWindowRect(OverlayData::getSingleton()->wnd, &windowRect);		
+	GetWindowRect(this->overlayData.wnd, &windowRect);		
 	this->windowWidth = windowRect.right - windowRect.left;
 	this->windowHeight = windowRect.bottom - windowRect.top;
 
-	if (OverlayData::getSingleton()->overlayEnabled)
+	if (this->overlayData.overlayEnabled)
 	{
-		std::cerr << "windowWidth: " << this->windowWidth << ", windowHeight: " << this->windowHeight << "\n";
 		this->drawFullOverlay();
 	}
 	else
@@ -59,12 +59,12 @@ void Gui::drawOverlay()
 
 void Gui::drawOverlayHint()
 {	
-	OverlayData::getSingleton()->renderer->drawText(this->windowWidth - 230, this->windowHeight - 60, 230, 50, "Press ctrl-space to enable overlay");
+	this->overlayData.renderer->drawText(this->windowWidth - 230, this->windowHeight - 60, 230, 50, "Press ctrl-space to enable overlay");
 }
 
 void Gui::drawFullOverlay()
 {
-	Renderer * renderer = OverlayData::getSingleton()->renderer;
+	Renderer * renderer = this->overlayData.renderer;
 
 	// shadow the screen
 	renderer->drawQuad(0, 0, 0.02f, (float)this->windowWidth, (float)this->windowHeight, 0x77FFFFFF, renderer->greyTexture);
@@ -97,7 +97,7 @@ void Gui::drawButton()
 		break;
 	}
 
-	Renderer * renderer = OverlayData::getSingleton()->renderer;
+	Renderer * renderer = this->overlayData.renderer;
 	renderer->drawQuad((float)BUTTON_X, (float)BUTTON_Y, 0.02f, (float)BUTTON_WIDTH, (float)BUTTON_HEIGHT, color, renderer->greyTexture);
 	renderer->drawQuad(BUTTON_X + 1.f, BUTTON_Y + 1, 0.02f, BUTTON_WIDTH - 2.f, BUTTON_HEIGHT - 2.f, 0xFFFFFFFF, renderer->greyTexture);
 	renderer->drawText(BUTTON_X + 5, BUTTON_Y +20, BUTTON_WIDTH, BUTTON_HEIGHT, "Press to disable overlay");

@@ -3,10 +3,12 @@
 
 #include <d3d9.h>
 
+struct OverlayData;
+
 class Gui
 {
 public:
-	Gui();
+	Gui(OverlayData & overlayData);
 
 	void drawOverlay();
 
@@ -30,6 +32,7 @@ private:
 
 	void drawButton();
 
+	OverlayData & overlayData;
 	int windowWidth, windowHeight;
 	ButtonState buttonState;
 };

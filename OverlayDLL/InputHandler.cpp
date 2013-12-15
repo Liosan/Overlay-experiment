@@ -5,7 +5,8 @@
 #include <Windowsx.h>
 
 
-InputHandler::InputHandler(WNDPROC const originalWndProc):
+InputHandler::InputHandler(OverlayData & overlayData, WNDPROC const originalWndProc):
+	overlayData(overlayData),
 	originalWndProc(originalWndProc)
 {
 }
@@ -33,7 +34,7 @@ LRESULT InputHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 	case WM_KEYUP:
 		if ((wParam == VK_SPACE) && (GetKeyState(VK_CONTROL) != 0))
 		{
-			OverlayData::getSingleton()->overlayEnabled = !OverlayData::getSingleton()->overlayEnabled;
+			this->overlayData.overlayEnabled = !this->overlayData.overlayEnabled;
 		}
 		break;
 	case WM_LBUTTONDBLCLK:
@@ -51,7 +52,7 @@ LRESULT InputHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 	case WM_MOUSEWHEEL:
 	case WM_MOUSEHWHEEL:
 	case WM_MOUSEMOVE:
-		if (OverlayData::getSingleton()->overlayEnabled)
+		if (this->overlayData.overlayEnabled)
 		{
 			this->forwardMessage(msg, lParam);
 			msg = WM_NULL;
@@ -63,7 +64,7 @@ LRESULT InputHandler::customWindowProc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 
 void InputHandler::forwardMessage(UINT msg, LPARAM lParam)
 {
-	Gui * gui = OverlayData::getSingleton()->gui;
+	Gui * gui = this->overlayData.gui;
 	switch(msg)
 	{
 	case WM_LBUTTONUP:
@@ -93,7 +94,7 @@ HRESULT WINAPI InputHandler::DIGetDeviceDataCustom(
 		return result;
 	}
 
-	if (OverlayData::getSingleton()->overlayEnabled)
+	if (this->overlayData.overlayEnabled)
 	{
 		*pdwInOut = 0;
 	}
